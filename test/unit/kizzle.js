@@ -66,11 +66,11 @@ function attr(attribute, operator, value) {
 }
 
 function etype(type) {
-  return {selector: "elementType", type: type};
+  return {selector: "attribute", attribute: "element type", operator: "=", value: type};
 }
 
 function ctype(type) {
-  return {selector: "connectionType", type: type};
+  return {selector: "attribute", attribute: "connection type", operator: "=", value: type};
 }
 
 function pseudo(pseudo, args) {
@@ -91,16 +91,16 @@ test("generic", function() {
   p("connection", "connection", {selector: "generic", type: "connection"});
 });
 
+test("tags", function() {
+  p("handles single tags", ".critical", tag("critical"));
+});
+
 test("element type", function() {
-  p("element types are recognized", "person", {selector: "elementType", type: "person"});
+  p("element types are recognized", "person", attr("element type", "=", "person"));
 });
 
 test("connection type", function() {
-  p("connection types are recognized", "personal-connection", {selector: "connectionType", type: "personal"});
-});
-
-test("tags", function() {
-  p("handles single tags", ".critical", {selector: "attribute", attribute: "tags", operator: "~=", value: "critical"});
+  p("connection types are recognized", "personal-connection", attr("connection type", "=", "personal"));
 });
 
 test("attribute presence", function() {

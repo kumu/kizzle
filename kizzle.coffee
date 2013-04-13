@@ -39,8 +39,8 @@ do (window, Sizzle) ->
     else if /^(element|connection)$/.test(type)
       {selector: "generic", type: type}
     else
-      selectorType = if /-connection$/.test(type) then "connectionType" else "elementType"
-      {selector: selectorType, type: type.replace('-connection', '')}
+      attribute = if /-connection$/.test(type) then "connection type" else "element type"
+      {selector: "attribute", attribute: attribute, operator: "=", value: type.replace('-connection', '')}
 
   tagSelector = (selector) ->
     {selector: "attribute", attribute: "tags", operator: "~=", value: selector.matches[0]}
