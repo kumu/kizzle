@@ -124,6 +124,10 @@ test("attribute not equals", function() {
   p("attribute not equals", "[label!=Ryan]", attr("label", "!=", "Ryan"));
 });
 
+test("attribute includes", function() {
+  p("attribute inclues", "[label~=bob]", attr("label", "~=", "bob")); // whitespace has been stripped
+})
+
 // always returns value as strings. the attribute fields will take care of any conversion
 // that needs to be done before making the actual comparison.
 test("relative attributes", function() {

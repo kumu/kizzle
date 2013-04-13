@@ -48,8 +48,8 @@ do (window, Sizzle) ->
   attributeSelector = (selector) ->
     [attribute, operator, value] = selector.matches
 
-    # want undefined not empty strings
-    value = undefined unless operator && operator isnt "!"
+    value = undefined unless operator && operator isnt "!"  # want undefined not empty strings
+    value = value.slice(1, -1) if operator is '~='          # we use this for arrays, not whitespace separated lists
 
     {selector: "attribute", attribute: attribute, operator, operator, value: value}
 

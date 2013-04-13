@@ -94,6 +94,9 @@ Sizzle = window.Sizzle;
     if (!(operator && operator !== "!")) {
       value = void 0;
     }
+    if (operator === '~=') {
+      value = value.slice(1, -1);
+    }
     return {
       selector: "attribute",
       attribute: attribute,

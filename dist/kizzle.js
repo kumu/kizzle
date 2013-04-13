@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-12
+ * Date: 2013-04-13
  */
 (function( window, undefined ) {
 
@@ -2051,6 +2051,9 @@ Sizzle = window.Sizzle;
     _ref = selector.matches, attribute = _ref[0], operator = _ref[1], value = _ref[2];
     if (!(operator && operator !== "!")) {
       value = void 0;
+    }
+    if (operator === '~=') {
+      value = value.slice(1, -1);
     }
     return {
       selector: "attribute",
