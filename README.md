@@ -13,6 +13,8 @@ Changes:
 * Added support for relative attribute value selectors (<, <=, >=, >)
 * Exposed tokenize via Sizzle.tokenize so we can access it later on.
 
+Kumu specific tests can be run through `test/kizzle.html`
+
 Dependencies
 ---------------------------
 
