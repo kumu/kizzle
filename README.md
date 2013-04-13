@@ -1,14 +1,17 @@
-# Sizzle
+# Kizzle
 
-__A pure-JavaScript CSS selector engine designed to be easily dropped in to a host library.__
+**The Sizzle library adapted to power Kumu's selector engine.**
 
-More information: http://sizzlejs.com/
+Notes
+---------------------------
 
-Discussion: http://groups.google.com/group/sizzlejs
+When working on the library try to make as few changes to the original code as possible
+to make it easier to pull future updates.
 
-Documentation: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation
-
-Browser support: https://github.com/jquery/sizzle/wiki/Sizzle-Documentation#wiki-browsers
+Changes:
+* Added support for quoted attributes and spaces.
+* Added support for relative attribute value selectors (<, <=, >=, >)
+* Exposed tokenize via Sizzle.tokenize so we can access it later on.
 
 Dependencies
 ---------------------------

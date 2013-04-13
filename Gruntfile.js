@@ -12,19 +12,30 @@ module.exports = function( grunt ) {
 		},
 		build: {
 			all: {
-				dest: "dist/sizzle.js",
-				src: "sizzle.js"
+				dest: "dist/kizzle.js",
+				src: "kizzle.js",
+				sizzle: "sizzle.js"
+			}
+		},
+		coffee: {
+			compile: {
+				options: {
+					bare: true
+				},
+				files: {
+					"kizzle.js": "kizzle.coffee"
+				}
 			}
 		},
 		uglify: {
 			all: {
 				files: {
-					"dist/sizzle.min.js": [ "dist/sizzle.js" ]
+					"dist/kizzle.min.js": [ "dist/kizzle.js" ]
 				},
 				options: {
 					compress: { evaluate: false },
-					banner: "/*! Sizzle v<%= pkg.version %> | (c) 2013 jQuery Foundation, Inc. | jquery.org/license */",
-					sourceMap: "dist/sizzle.min.map",
+					banner: "/*! Kizzle v<%= pkg.version %> | (c) 2013 Kumu Systems LLC | All rights reserved */",
+					sourceMap: "dist/kizzle.min.map",
 					beautify: {
 						ascii_only: true
 					}
@@ -32,7 +43,7 @@ module.exports = function( grunt ) {
 			}
 		},
 		compare_size: {
-			files: [ "dist/sizzle.js", "dist/sizzle.min.js" ],
+			files: [ "dist/kizzle.js", "dist/kizzle.min.js" ],
 			options: {
 				compress: {
 					gz: function( contents ) {
@@ -44,7 +55,7 @@ module.exports = function( grunt ) {
 		},
 		jshint: {
 			source: {
-				src: [ "sizzle.js" ],
+				src: [ "kizzle.js" ],
 				options: {
 					jshintrc: ".jshintrc"
 				}
@@ -86,8 +97,9 @@ module.exports = function( grunt ) {
 			var data = this.data,
 				dest = data.dest,
 				src = data.src,
+				sizzle = data.sizzle,
 				version = grunt.config("pkg.version"),
-				compiled = grunt.file.read( src );
+				compiled = grunt.file.read(sizzle) + "\n\n\n" + grunt.file.read( src );
 
 			// Embed version and date
 			compiled = compiled
@@ -143,6 +155,7 @@ module.exports = function( grunt ) {
 	});
 
 	// Load grunt tasks from NPM packages
+	grunt.loadNpmTasks("grunt-contrib-coffee");
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-qunit");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
@@ -151,7 +164,8 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks("grunt-git-authors");
 
 	// Default task
-	grunt.registerTask( "default", [ "jshint", "build", "uglify", "dist", "qunit", "compare_size" ] );
+  // "jshint", 
+	grunt.registerTask( "default", [ "coffee", "build", "uglify", "dist", "qunit", "compare_size" ] );
 
 	// Task aliases
 	grunt.registerTask( "lint", ["jshint"] );

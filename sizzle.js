@@ -78,8 +78,11 @@ var i,
 	identifier = characterEncoding.replace( "w", "w#" ),
 
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
-	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
-		"*(?:([*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
+	attributes = "\\[!?" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\1|(" + identifier + "))" + whitespace +
+		"*(?:((?:[<>])|[<>*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\5|(" + identifier + ")|)|)" + whitespace + "*\\]",
+
+  attributesClassic = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
+    "*(?:((?:[<>])|[<>*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
 
 	// Prefer arguments quoted,
 	//   then not containing pseudos/brackets,
@@ -87,7 +90,7 @@ var i,
 	//   then anything else
 	// These preferences are here to reduce the number of selectors
 	//   needing tokenize in the PSEUDO preFilter
-	pseudos = ":(" + characterEncoding + ")(?:\\(((['\"])((?:\\\\.|[^\\\\])*?)\\3|((?:\\\\.|[^\\\\()[\\]]|" + attributes.replace( 3, 8 ) + ")*)|.*)\\)|)",
+	pseudos = ":(" + characterEncoding + ")(?:\\(((['\"])((?:\\\\.|[^\\\\])*?)\\3|((?:\\\\.|[^\\\\()[\\]]|" + attributesClassic.replace( 3, 8 ) + ")*)|.*)\\)|)",
 
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
@@ -927,11 +930,14 @@ Expr = Sizzle.selectors = {
 	},
 
 	preFilter: {
+    // modified to support quoted attributes
 		"ATTR": function( match ) {
-			match[1] = match[1].replace( runescape, funescape );
+      // debugger
+			match[1] = ( match[2] || match[3] ).replace( runescape, funescape );
+			match[2] = /^\[!/.test(match[0]) ? "!" : match[4]; // absence
 
 			// Move the given value to match[3] whether quoted or unquoted
-			match[3] = ( match[4] || match[5] || "" ).replace( runescape, funescape );
+			match[3] = ( match[6] || match[7] || "" ).replace( runescape, funescape );
 
 			if ( match[2] === "~=" ) {
 				match[3] = " " + match[3] + " ";
@@ -1934,6 +1940,9 @@ assert(function( div ) {
 		}
 	}
 });
+
+// expose the tokenize method so we can use it
+Sizzle.tokenize = tokenize;
 
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
