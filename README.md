@@ -8,6 +8,8 @@ Notes
 When working on the library try to make as few changes to the original code as possible
 to make it easier to pull future updates.
 
+Kumu specific tests can be run through `test/kizzle.html`
+
 Changes:
 * Added support for quoted attributes and spaces.
 * Added support for relative attribute value selectors (<, <=, >=, >)
