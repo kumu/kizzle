@@ -2015,7 +2015,7 @@ Sizzle = window.Sizzle;
     };
   };
   typeSelector = function(selector) {
-    var selectorType, type;
+    var attribute, type;
 
     type = selector.matches[0];
     if (type === "*") {
@@ -2028,10 +2028,12 @@ Sizzle = window.Sizzle;
         type: type
       };
     } else {
-      selectorType = /-connection$/.test(type) ? "connectionType" : "elementType";
+      attribute = /-connection$/.test(type) ? "connection type" : "element type";
       return {
-        selector: selectorType,
-        type: type.replace('-connection', '')
+        selector: "attribute",
+        attribute: attribute,
+        operator: "=",
+        value: type.replace('-connection', '')
       };
     }
   };
