@@ -1,18 +1,15 @@
-<!-- this one tests everything to make sure we haven't screwed anything up with the core -->
+<!-- this one only tests kizzle itself -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr" id="html">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>Sizzle Test Suite</title>
-	<link rel="Stylesheet" media="screen" href="libs/qunit/qunit.css" />
-	<script type="text/javascript" src="libs/qunit/qunit.js"></script>
+	<link rel="Stylesheet" media="screen" href="qunit/qunit/qunit.css" />
+	<script type="text/javascript" src="qunit/qunit/qunit.js"></script>
 	<script type="text/javascript" src="data/testinit.js"></script>
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="../dist/kizzle.js"></script>
 	<script type="text/javascript" src="unit/kizzle.js"></script>
-	<script type="text/javascript" src="unit/selector.js"></script>
-	<script type="text/javascript" src="unit/utilities.js"></script>
-	<script type="text/javascript" src="unit/extending.js"></script>
 </head>
 
 <body id="body">
@@ -191,15 +188,8 @@ Z</textarea>
 			</div>
 			<div id="no-clone-exception"><object><embed></embed></object></div>
 			<div id="names-group">
-				<span id="name-is-example" name="example"></span>
-				<span id="name-is-div" name="div"></span>
-			</div>
-			<script id="script-no-src"></script>
-			<script id="script-src" src="data/empty.js"></script>
-			<div id="id-name-tests">
-				<a id="tName1ID" name="tName1"><span></span></a>
-				<a id="tName2ID" name="tName2"><span></span></a>
-				<div id="tName1"><span id="tName1-span">C</span></div>
+					<span id="name-is-example" name="example"></span>
+					<span id="name-is-div" name="div"></span>
 			</div>
 		</div>
 

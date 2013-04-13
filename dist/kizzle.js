@@ -84,8 +84,11 @@ var i,
 	identifier = characterEncoding.replace( "w", "w#" ),
 
 	// Acceptable operators http://www.w3.org/TR/selectors/#attribute-selectors
-	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
-		"*(?:([*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
+	attributes = "\\[!?" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\1|(" + identifier + "))" + whitespace +
+		"*(?:((?:[<>])|[<>*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\5|(" + identifier + ")|)|)" + whitespace + "*\\]",
+
+  attributesClassic = "\\[" + whitespace + "*(" + characterEncoding + ")" + whitespace +
+    "*(?:((?:[<>])|[<>*^$|!~]?=)" + whitespace + "*(?:(['\"])((?:\\\\.|[^\\\\])*?)\\3|(" + identifier + ")|)|)" + whitespace + "*\\]",
 
 	// Prefer arguments quoted,
 	//   then not containing pseudos/brackets,
@@ -93,7 +96,7 @@ var i,
 	//   then anything else
 	// These preferences are here to reduce the number of selectors
 	//   needing tokenize in the PSEUDO preFilter
-	pseudos = ":(" + characterEncoding + ")(?:\\(((['\"])((?:\\\\.|[^\\\\])*?)\\3|((?:\\\\.|[^\\\\()[\\]]|" + attributes.replace( 3, 8 ) + ")*)|.*)\\)|)",
+	pseudos = ":(" + characterEncoding + ")(?:\\(((['\"])((?:\\\\.|[^\\\\])*?)\\3|((?:\\\\.|[^\\\\()[\\]]|" + attributesClassic.replace( 3, 8 ) + ")*)|.*)\\)|)",
 
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
@@ -967,11 +970,14 @@ Expr = Sizzle.selectors = {
 	},
 
 	preFilter: {
+    // modified to support quoted attributes
 		"ATTR": function( match ) {
-			match[1] = match[1].replace( runescape, funescape );
+      // debugger
+			match[1] = ( match[2] || match[3] ).replace( runescape, funescape );
+			match[2] = /^\[!/.test(match[0]) ? "!" : match[4]; // absence
 
 			// Move the given value to match[3] whether quoted or unquoted
-			match[3] = ( match[4] || match[5] || "" ).replace( runescape, funescape );
+			match[3] = ( match[6] || match[7] || "" ).replace( runescape, funescape );
 
 			if ( match[2] === "~=" ) {
 				match[3] = " " + match[3] + " ";
@@ -2003,6 +2009,9 @@ if ( !assert(function( div ) {
 	});
 }
 
+// expose the tokenize method so we can use it
+Sizzle.tokenize = tokenize;
+
 // EXPOSE
 if ( typeof define === "function" && define.amd ) {
 	define(function() { return Sizzle; });
@@ -2015,3 +2024,149 @@ if ( typeof define === "function" && define.amd ) {
 // EXPOSE
 
 })( window );
+
+
+
+/*
+Copyright 2013 Kumu Systems LLC. All rights reserved.
+*/
+
+var Sizzle;
+
+Sizzle = window.Sizzle;
+
+(function(window, Sizzle) {
+  var Kizzle, attributeSelector, flatten, idSelector, intersection, parse, pseudoSelector, tagSelector, transform, typeSelector, union;
+
+  Kizzle = function() {};
+  flatten = function(selector) {
+    var _ref;
+
+    if (((_ref = selector.selectors) != null ? _ref.length : void 0) === 1) {
+      return selector.selectors[0];
+    } else {
+      return selector;
+    }
+  };
+  union = function() {
+    return {
+      selector: "union",
+      selectors: []
+    };
+  };
+  intersection = function() {
+    return {
+      selector: "intersection",
+      selectors: []
+    };
+  };
+  transform = function(selector) {
+    var transformer;
+
+    transformer = (function() {
+      switch (selector.type) {
+        case "ID":
+          return idSelector;
+        case "TAG":
+          return typeSelector;
+        case "CLASS":
+          return tagSelector;
+        case "ATTR":
+          return attributeSelector;
+        case "PSEUDO":
+          return pseudoSelector;
+      }
+    })();
+    return transformer(selector);
+  };
+  idSelector = function(selector) {
+    return {
+      selector: "id",
+      id: selector.matches[0]
+    };
+  };
+  typeSelector = function(selector) {
+    var selectorType, type;
+
+    type = selector.matches[0];
+    if (type === "*") {
+      return {
+        selector: "universal"
+      };
+    } else if (/^(element|connection)$/.test(type)) {
+      return {
+        selector: "generic",
+        type: type
+      };
+    } else {
+      selectorType = /-connection$/.test(type) ? "connectionType" : "elementType";
+      return {
+        selector: selectorType,
+        type: type.replace('-connection', '')
+      };
+    }
+  };
+  tagSelector = function(selector) {
+    return {
+      selector: "attribute",
+      attribute: "tags",
+      operator: "~=",
+      value: selector.matches[0]
+    };
+  };
+  attributeSelector = function(selector) {
+    var attribute, operator, value, _ref;
+
+    _ref = selector.matches, attribute = _ref[0], operator = _ref[1], value = _ref[2];
+    if (!(operator && operator !== "!")) {
+      value = void 0;
+    }
+    return {
+      selector: "attribute",
+      attribute: attribute,
+      operator: operator,
+      operator: operator,
+      value: value
+    };
+  };
+  pseudoSelector = function(selector) {
+    var args, pseudo, _ref;
+
+    _ref = selector.matches, pseudo = _ref[0], args = _ref[1];
+    switch (pseudo) {
+      case "not":
+        return {
+          selector: "not",
+          subselector: parse(args)
+        };
+      default:
+        return {
+          selector: pseudo,
+          args: args
+        };
+    }
+  };
+  parse = Kizzle.parse = function(string) {
+    var list, result, s1, s2, selector, _i, _j, _len, _len1;
+
+    s1 = union();
+    result = Sizzle.tokenize(string);
+    for (_i = 0, _len = result.length; _i < _len; _i++) {
+      list = result[_i];
+      s2 = intersection();
+      for (_j = 0, _len1 = list.length; _j < _len1; _j++) {
+        selector = list[_j];
+        s2.selectors.push(transform(selector));
+      }
+      s1.selectors.push(flatten(s2));
+    }
+    return flatten(s1);
+  };
+  if (typeof define === "function" && define.amd) {
+    return define(function() {
+      return Kizzle;
+    });
+  } else {
+    return window.Kizzle = Kizzle;
+  }
+})(window, Sizzle);

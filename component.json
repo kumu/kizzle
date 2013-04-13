@@ -1,0 +1,6 @@
+{
+  "name": "kizzle",
+  "version": "1.0.0",
+  "main": "./dist/kizzle.js",
+  "dependencies": {}
+}
