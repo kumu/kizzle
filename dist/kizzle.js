@@ -6,7 +6,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-04-13
+ * Date: 2013-12-03
  */
 (function( window, undefined ) {
 
@@ -1990,8 +1990,18 @@ Sizzle = window.Sizzle;
     };
   };
   transform = function(selector) {
-    var transformer;
+    var escapedMatches, match, transformer, _i, _len, _ref;
 
+    escapedMatches = [];
+    _ref = selector.matches;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      match = _ref[_i];
+      if (typeof match === 'string') {
+        match = unescape(match);
+      }
+      escapedMatches.push(match);
+    }
+    selector.matches = escapedMatches;
     transformer = (function() {
       switch (selector.type) {
         case "ID":
@@ -2022,7 +2032,7 @@ Sizzle = window.Sizzle;
       return {
         selector: "universal"
       };
-    } else if (/^(element|connection)$/.test(type)) {
+    } else if (/^(element|connection|loop)$/.test(type)) {
       return {
         selector: "generic",
         type: type
