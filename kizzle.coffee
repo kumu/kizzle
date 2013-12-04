@@ -35,7 +35,7 @@ do (window, Sizzle) ->
       when "PSEUDO" then pseudoSelector
       else
         ; # raise in error?
-    
+
     transformer(selector)
 
   idSelector = (selector) ->
@@ -43,7 +43,7 @@ do (window, Sizzle) ->
 
   typeSelector = (selector) ->
     type = selector.matches[0]
-    
+
     if type is "*"
       {selector: "universal"}
     else if /^(element|connection|loop)$/.test(type)
@@ -65,7 +65,7 @@ do (window, Sizzle) ->
 
   pseudoSelector = (selector) ->
     [pseudo, args] = selector.matches
-    
+
     switch pseudo
       when "not" then {selector: "not", subselector: parse(args)}
       else {selector: pseudo, args: args}
