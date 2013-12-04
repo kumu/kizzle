@@ -46,7 +46,7 @@ do (window, Sizzle) ->
     
     if type is "*"
       {selector: "universal"}
-    else if /^(element|connection)$/.test(type)
+    else if /^(element|connection|loop)$/.test(type)
       {selector: "generic", type: type}
     else
       attribute = if /-connection$/.test(type) then "connection type" else "element type"
