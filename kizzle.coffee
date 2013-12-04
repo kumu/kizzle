@@ -17,6 +17,16 @@ do (window, Sizzle) ->
   intersection = -> {selector: "intersection", selectors: []}
 
   transform = (selector) ->
+    escapedMatches = []
+
+    for match in selector.matches
+      match = unescape(match) if typeof match is 'string'
+      escapedMatches.push(match)
+
+    # we may need to handle this on a case by case basis but for
+    # now this seems to work
+    selector.matches = escapedMatches
+
     transformer = switch selector.type
       when "ID" then idSelector
       when "TAG" then typeSelector
