@@ -77,6 +77,10 @@ function pseudo(pseudo, args) {
   return {selector: pseudo, args: args};
 }
 
+function comb(type) {
+  return {combinator: type};
+}
+
 test("universal", function() {
   p("*", "*", {selector: "universal"});
 });
@@ -116,8 +120,8 @@ test("attribute absence", function() {
 
 test("attribute equals", function() {
   p("attribute equals", "[label=Ryan]", attr("label", "=", "Ryan"));
-  p("with quoted value", "[label='Ryan Mohr']", attr("label", "=", "Ryan Mohr"));
-  p("with quoted attribute and value", "['label'='Ryan Mohr']", attr("label", "=", "Ryan Mohr"));
+  p("with quoted value", "[label=\"Ryan Mohr\"]", attr("label", "=", "Ryan Mohr"));
+  p("with quoted attribute and value", "[\"label\"=\"Ryan Mohr\"]", attr("label", "=", "Ryan Mohr"));
 });
 
 test("attribute not equals", function() {
@@ -126,7 +130,7 @@ test("attribute not equals", function() {
 
 test("attribute includes", function() {
   p("attribute inclues", "[label~=bob]", attr("label", "~=", "bob")); // whitespace has been stripped
-})
+});
 
 // always returns value as strings. the attribute fields will take care of any conversion
 // that needs to be done before making the actual comparison.
@@ -137,12 +141,16 @@ test("relative attributes", function() {
   p("greater than", "[value>0]", attr("value", ">", "0"));
 });
 
+test("attribute values", function() {
+  p("with double quotes", "[label=\"Ryan \\\"Papa\\\" Mohr\"]", attr("label", "=", "Ryan \"Papa\" Mohr"));
+});
+
 test("unions", function() {
-  p("unions", ".young, .influential", union([tag('young'), tag('influential')]));
+  p("unions", ".young, .influential", union([tag("young"), tag("influential")]));
 });
 
 test("intersections", function() {
-  p("multiple tags", ".young.influential", intersection([tag('young'), tag('influential')]));
+  p("multiple tags", ".young.influential", intersection([tag("young"), tag("influential")]));
 });
 
 // would these select c or the path from a to c?
@@ -152,8 +160,21 @@ test("intersections", function() {
 // test("traversal", function() {
 //   p("walking", "#me * #you", {selector: "traversal", selectors: [{}]})
 // });
+test("traversals", function() {
+  var expected = intersection([etype("a"), comb(" "), etype("b")]);
+  p(" ", "a b", expected);
+});
 
 test("stress test", function() {
-  expected = intersection([etype("person"), tag("young"), attr("salary", "=", "100K"), pseudo("out", "3")]);
+  var expected = intersection([etype("person"), tag("young"), attr("salary", "=", "100K"), pseudo("out", "3")]);
   p("", "person.young[salary=100K]:out(3)", expected);
+});
+
+test("invalid selectors", function() {
+  try {
+    Kizzle.parse("a $ b");
+    ok(false);
+  } catch (err) {
+    ok(true);
+  }
 });

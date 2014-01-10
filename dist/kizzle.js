@@ -1,12 +1,12 @@
 /*!
- * Sizzle CSS Selector Engine v1.10.16-pre
+ * Sizzle CSS Selector Engine v@VERSION
  * http://sizzlejs.com/
  *
  * Copyright 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-12-20
+ * Date: @DATE
  */
 (function( window ) {
 
@@ -2036,7 +2036,7 @@ var Sizzle;
 Sizzle = window.Sizzle;
 
 (function(window, Sizzle) {
-  var Kizzle, attributeSelector, flatten, idSelector, intersection, parse, pseudoSelector, tagSelector, transform, typeSelector, union;
+  var Kizzle, attributeSelector, flatten, idSelector, intersection, parse, pseudoSelector, tagSelector, transform, traversal, typeSelector, union;
 
   Kizzle = function() {};
   flatten = function(selector) {
@@ -2061,18 +2061,8 @@ Sizzle = window.Sizzle;
     };
   };
   transform = function(selector) {
-    var escapedMatches, match, transformer, _i, _len, _ref;
+    var transformer;
 
-    escapedMatches = [];
-    _ref = selector.matches;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      match = _ref[_i];
-      if (typeof match === 'string') {
-        match = unescape(match);
-      }
-      escapedMatches.push(match);
-    }
-    selector.matches = escapedMatches;
     transformer = (function() {
       switch (selector.type) {
         case "ID":
@@ -2085,6 +2075,15 @@ Sizzle = window.Sizzle;
           return attributeSelector;
         case "PSEUDO":
           return pseudoSelector;
+        case " ":
+        case "+":
+        case "<":
+        case ">":
+        case "~":
+        case "|":
+          return traversal;
+        default:
+          throw new Error("Unrecognized input, " + selector.type);
       }
     })();
     return transformer(selector);
@@ -2114,7 +2113,7 @@ Sizzle = window.Sizzle;
         selector: "attribute",
         attribute: attribute,
         operator: "=",
-        value: type.replace('-connection', '')
+        value: type.replace("-connection", "")
       };
     }
   };
@@ -2133,7 +2132,7 @@ Sizzle = window.Sizzle;
     if (!(operator && operator !== "!")) {
       value = void 0;
     }
-    if (operator === '~=') {
+    if (operator === "~=") {
       value = value.slice(1, -1);
     }
     return {
@@ -2160,6 +2159,11 @@ Sizzle = window.Sizzle;
           args: args
         };
     }
+  };
+  traversal = function(combinator) {
+    return {
+      combinator: combinator.type
+    };
   };
   parse = Kizzle.parse = function(string) {
     var list, result, s1, s2, selector, _i, _j, _len, _len1;
